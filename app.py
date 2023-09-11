@@ -44,28 +44,6 @@ def create_images_from_pdf(pdf_doc, folder_name):
         image.save(f"output/images/{folder_name}/_{idx}.jpg", "JPEG")
 
 
-
-def get_pdf_text(pdf_docs):
-    """Extracts text from PDFs using OCR and returns a string"""
-    text = ""
-
-    # Save the PDFs to a temporary directory
-    with tempfile.TemporaryDirectory() as path:
-        for pdf_doc in pdf_docs:
-            with open(f"{path}/{pdf_doc.name}", "wb") as f:
-                f.write(pdf_doc.getbuffer())
-
-        # Load the PDFs
-        loader = UnstructuredPDFLoader(f"{path}/{pdf_doc.name}", max_partition=1000, strategy="ocr_only")
-        data = loader.load()
-        print("Loaded PDFs: ", data)
-
-
-    return text
-
-
-
-
 def get_text_chunks(raw_text):
     """Extracts text chunks from a string and returns a list of strings"""
     text_splitter = CharacterTextSplitter(
@@ -141,12 +119,6 @@ def main():
                 start_time = time.time()
                 process_images(folder_name)
                 print(f"Time taken for creating OCR: {time.time() - start_time} seconds")
-
-
-                # # Save the PDF to a text file
-                # with open("pdf_text.txt", "w") as f:
-                #     f.write(raw_text)
-
 
                 # #  Extract text chunks
                 # print("Extracting text chunks")
