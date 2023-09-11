@@ -30,7 +30,7 @@ def save_ocr_text(folder_name, start_idx, end_idx):
     if not os.path.exists(path_to_save):
         os.makedirs(path_to_save)
 
-    with open(path_to_save + f"_{start_idx}.txt", "w") as f:
+    with open(path_to_save + f"_{int(start_idx / 10) + 1}.txt", "w") as f:
         f.write(ocr_text)
 
     return ocr_text
@@ -49,8 +49,7 @@ if __name__ == '__main__':
     number_of_images = get_number_of_images("dragon")
     batch_start_indices = get_indices_of_start_batch(number_of_images)
 
-    num_processes = 4
-    pool = Pool(processes=num_processes)
+    pool = Pool()
 
     for i in range(len(batch_start_indices) - 1):
         print(f"Started executing batch {i+1}")
