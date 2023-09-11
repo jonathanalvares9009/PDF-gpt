@@ -11,35 +11,37 @@ from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 from pdf2image import convert_from_path
 import tempfile, time, os
+from ocr import process_images
 
 
-def create_images_from_pdf(pdf_docs):
+def create_images_from_pdf(pdf_doc, folder_name):
     """Creates and saves images to output directory with the folder name as the file name"""
-    for pdf_doc in pdf_docs:
-        # Check if the output folder has a directory with the same name as the PDF
-        if os.path.exists(f"output/images/{pdf_doc.name}"):
-            return
+    # Check if the output folder has a directory with the same name as the PDF
+    if os.path.exists(f"output/images/{folder_name}"):
+        return
 
-       # Create a temporary PDF file
-        with tempfile.NamedTemporaryFile() as f:
-            f.write(pdf_doc.getbuffer())
-            images = convert_from_path(f.name)
+    # Create a temporary PDF file
+    with tempfile.NamedTemporaryFile() as f:
+        f.write(pdf_doc.getbuffer())
+        images = convert_from_path(f.name)
 
-        # Check if the output directory exists
-        if not os.path.exists("output"):
-            os.mkdir("output")
+    # Check if the output directory exists
+    if not os.path.exists("output"):
+        os.mkdir("output")
 
-        # Check if the images folder exists
-        if not os.path.exists("output/images"):
-            os.mkdir("output/images")
+    # Check if the images folder exists
+    if not os.path.exists("output/images"):
+        os.mkdir("output/images")
 
-        # Check if the folder exists
-        if not os.path.exists(f"output/images/{pdf_doc.name}"):
-            os.mkdir(f"output/images/{pdf_doc.name}")
+    folder_name = pdf_doc.name.split(".")[0]
 
-        # Save the images to the output directory
-        for idx, image in enumerate(images):
-            image.save(f"output/images/{pdf_doc.name}/_{idx}.jpg", "JPEG")
+    # Check if the folder exists
+    if not os.path.exists(f"output/images/{folder_name}"):
+        os.mkdir(f"output/images/{folder_name}")
+
+    # Save the images to the output directory
+    for idx, image in enumerate(images):
+        image.save(f"output/images/{folder_name}/_{idx}.jpg", "JPEG")
 
 
 
@@ -126,19 +128,20 @@ def main():
 
     with st.sidebar:
         st.subheader("Your documents")
-        pdf_docs = st.file_uploader(
-            "Upload your PDFs here", accept_multiple_files=True)
+        pdf_doc = st.file_uploader(
+            "Upload your PDFs here")
         if st.button("Process PDFs"):
             with st.spinner("Processing PDFs..."):
+                folder_name = pdf_doc.name.split(".")[0]
+
                 start_time = time.time()
-                create_images_from_pdf(pdf_docs)
+                create_images_from_pdf(pdf_doc, folder_name)
                 print(f"Time taken for creating images: {time.time() - start_time} seconds")
 
-                # #  Get the PDF text
-                # start_time = time.time()
-                # print("Getting PDF text")
-                # raw_text = get_pdf_text(pdf_docs)
-                # print(f"Time taken: {time.time() - start_time} seconds")
+                start_time = time.time()
+                process_images(folder_name)
+                print(f"Time taken for creating OCR: {time.time() - start_time} seconds")
+
 
                 # # Save the PDF to a text file
                 # with open("pdf_text.txt", "w") as f:

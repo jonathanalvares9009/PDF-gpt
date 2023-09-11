@@ -35,29 +35,23 @@ def save_ocr_text(folder_name, start_idx, end_idx):
 
     return ocr_text
 
+def process_images(folder_name):
+    """It processes the images in the folder and saves the text to a file"""
+    if not os.path.exists(f"output/images/{folder_name}"):
+        return
     
+    if os.path.exists(f"output/text/{folder_name}"):
+        return
 
-
-def worker(num):
-    """Simple function to do some work"""
-    print(f'Worker {num} is working')
-
-if __name__ == '__main__':
-    # Create a pool of processes
-    start_time = time.time()
-
-    number_of_images = get_number_of_images("dragon")
+    number_of_images = get_number_of_images(folder_name)
     batch_start_indices = get_indices_of_start_batch(number_of_images)
 
     pool = Pool()
 
     for i in range(len(batch_start_indices) - 1):
-        print(f"Started executing batch {i+1}")
         start_idx = batch_start_indices[i]
         end_idx = batch_start_indices[i + 1]
-        pool.apply_async(save_ocr_text, args=("dragon", start_idx, end_idx))
+        pool.apply_async(save_ocr_text, args=(folder_name, start_idx, end_idx))
 
     pool.close()
     pool.join() 
-
-    print(f"Time taken: {time.time() - start_time} seconds")
