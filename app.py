@@ -16,6 +16,10 @@ import tempfile, time, os
 def create_images_from_pdf(pdf_docs):
     """Creates and saves images to output directory with the folder name as the file name"""
     for pdf_doc in pdf_docs:
+        # Check if the output folder has a directory with the same name as the PDF
+        if os.path.exists(f"output/{pdf_doc.name}"):
+            return
+
        # Create a temporary PDF file
         with tempfile.NamedTemporaryFile() as f:
             f.write(pdf_doc.getbuffer())
