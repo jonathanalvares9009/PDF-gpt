@@ -17,7 +17,7 @@ def create_images_from_pdf(pdf_docs):
     """Creates and saves images to output directory with the folder name as the file name"""
     for pdf_doc in pdf_docs:
         # Check if the output folder has a directory with the same name as the PDF
-        if os.path.exists(f"output/{pdf_doc.name}"):
+        if os.path.exists(f"output/images/{pdf_doc.name}"):
             return
 
        # Create a temporary PDF file
@@ -29,13 +29,17 @@ def create_images_from_pdf(pdf_docs):
         if not os.path.exists("output"):
             os.mkdir("output")
 
+        # Check if the images folder exists
+        if not os.path.exists("output/images"):
+            os.mkdir("output/images")
+
         # Check if the folder exists
-        if not os.path.exists(f"output/{pdf_doc.name}"):
-            os.mkdir(f"output/{pdf_doc.name}")
+        if not os.path.exists(f"output/images/{pdf_doc.name}"):
+            os.mkdir(f"output/images/{pdf_doc.name}")
 
         # Save the images to the output directory
         for idx, image in enumerate(images):
-            image.save(f"output/{pdf_doc.name}/_{idx}.jpg", "JPEG")
+            image.save(f"output/images/{pdf_doc.name}/_{idx}.jpg", "JPEG")
 
 
 
