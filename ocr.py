@@ -1,7 +1,8 @@
 from PIL import Image
 import pytesseract
-import os, time
+import os
 from multiprocessing import Pool
+from transformers import pipeline
 
 def get_number_of_images(folder_name):
     """Returns the number of images in a directory"""
@@ -55,3 +56,10 @@ def process_images(folder_name):
 
     pool.close()
     pool.join() 
+
+if __name__ == "__main__":
+    image = Image.open("/Users/jonathanalvares/Downloads/IMG_1422.jpg")
+    pipe = pipeline("image-to-text", model="DunnBC22/trocr-base-handwritten-OCR-handwriting_recognition_v2")
+
+    
+    # print(pipe(image))

@@ -1,6 +1,6 @@
 bot_template = """
-<div style="background-color: #e6f7ff; padding: 10px; border-radius: 10px; margin: 10px;">
-    <p style="color: #000000; font-weight: bold; font-size: 1.1em;">Bot: {{MSG}}</p>
+<div style="padding: 10px; border-radius: 10px; margin: 10px; height: 100%">
+    <p style="color: #fff; font-weight: bold; font-size: 1.1em;">Bot: {{MSG}}</p>
 </div>
 """
 
