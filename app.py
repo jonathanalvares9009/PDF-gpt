@@ -14,7 +14,7 @@ from vector_store import create_vector_store, get_vector_store
 # from langchain.prompts import PromptTemplate
 # from langchain.chains import LLMChain
 
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = "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"
 
 
 def create_images_from_pdf(pdf_doc, folder_name):
@@ -102,7 +102,7 @@ def main():
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = None
 
-    st.set_page_config(page_title="Chat with your Computer Science Tutor",
+    st.set_page_config(page_title="Chat with your Compiler Design Tutor",
                        page_icon=":books:")
     st.header("Chat with tutor :teacher:")
     user_question = st.text_input(
