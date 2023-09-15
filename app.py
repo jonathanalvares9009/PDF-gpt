@@ -10,12 +10,6 @@ import tempfile, time, os
 from ocr import process_images
 from vector_store import create_vector_store, get_vector_store
 
-# from langchain.llms import OpenAI
-# from langchain.prompts import PromptTemplate
-# from langchain.chains import LLMChain
-
-os.environ["OPENAI_API_KEY"] = "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"
-
 
 def create_images_from_pdf(pdf_doc, folder_name):
     """Creates and saves images to output directory with the folder name as the file name"""
