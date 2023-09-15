@@ -2,3 +2,4 @@ langchain
 streamlit
 pdf2image
 pytesseract
+transformers
