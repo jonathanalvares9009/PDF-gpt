@@ -1,5 +1,5 @@
 import streamlit as st
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
@@ -13,6 +13,8 @@ from vector_store import create_vector_store, get_vector_store
 # from langchain.llms import OpenAI
 # from langchain.prompts import PromptTemplate
 # from langchain.chains import LLMChain
+
+os.environ["OPENAI_API_KEY"] = "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"
 
 
 def create_images_from_pdf(pdf_doc, folder_name):
@@ -75,30 +77,34 @@ def create_conversation_chain(vector_store):
 
 
 def handle_userquestion(user_question):
-    response = st.session_state.conversation({"question": user_question})
-    st.session_state.chat_history = response["chat_history"]
+    """Handles a user question and returns a response"""
+    if st.session_state.conversation:
+        response = st.session_state.conversation({"question": user_question})
+        st.session_state.chat_history = response["chat_history"]
 
-    for idx, message in enumerate(st.session_state.chat_history):
-        if idx % 2 == 0:
-            st.write(user_template.replace(
-                "{{MSG}}", message.content), unsafe_allow_html=True)
-        else:
-            st.write(bot_template.replace(
-                "{{MSG}}", message.content), unsafe_allow_html=True)
-    st.session_state.user_question = ""
+        for idx, message in enumerate(st.session_state.chat_history):
+            if idx % 2 == 0:
+                st.write(user_template.replace(
+                    "{{MSG}}", message.content), unsafe_allow_html=True)
+            else:
+                st.write(bot_template.replace(
+                    "{{MSG}}", message.content), unsafe_allow_html=True)
+        st.session_state.user_question = ""
+    else:
+        st.write("Please process the PDFs first")
 
 
 def main():
-    load_dotenv()
+    # load_dotenv()
 
     if "conversation" not in st.session_state:
         st.session_state.conversation = None
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = None
 
-    st.set_page_config(page_title="Chat with PDFs",
+    st.set_page_config(page_title="Chat with your Computer Science Tutor",
                        page_icon=":books:")
-    st.header("Chat with PDFs :books:")
+    st.header("Chat with tutor :teacher:")
     user_question = st.text_input(
         "Ask questions about the PDFs here: ")
 
@@ -109,34 +115,35 @@ def main():
 
     with st.sidebar:
         st.subheader("Your documents")
-        pdf_doc = st.file_uploader(
-            "Upload your PDFs here")
-        if st.button("Process PDFs"):
+        pdf_doc = None
+        if st.button("Upload PDFs"):
+            pdf_doc = st.file_uploader(
+                "Upload your PDFs here")
+        if st.button("Start"):
             with st.spinner("Processing PDFs..."):
-                folder_name = pdf_doc.name.split(".")[0]
+                if pdf_doc:
+                    folder_name = pdf_doc.name.split(".")[0]
 
-                start_time = time.time()
-                create_images_from_pdf(pdf_doc, folder_name)
-                print(f"Time taken for creating images: {time.time() - start_time} seconds")
+                    start_time = time.time()
+                    create_images_from_pdf(pdf_doc, folder_name)
+                    print(f"Time taken for creating images: {time.time() - start_time} seconds")
 
-                start_time = time.time()
-                process_images(folder_name)
-                print(f"Time taken for creating OCR: {time.time() - start_time} seconds")
+                    start_time = time.time()
+                    process_images(folder_name)
+                    print(f"Time taken for creating OCR: {time.time() - start_time} seconds")
 
-                start_time = time.time()
-                text_chunks = get_text_chunks(folder_name)
-                print(f"Time taken for creating text chunks: {time.time() - start_time} seconds")    
+                    start_time = time.time()
+                    text_chunks = get_text_chunks(folder_name)
+                    print(f"Time taken for creating text chunks: {time.time() - start_time} seconds")    
 
-                # Create vector store if it doesn't exist
-                start_time = time.time()
-                # if not os.path.exists("vector_store"):
-                # create_vector_store(text_chunks)
-                # Load vector store
-                vector_store = get_vector_store()
-                print(f"Time taken for creating a vector store: {time.time() - start_time} seconds")
+                    # Create vector store if it doesn't exist
+                    start_time = time.time()
+                    create_vector_store(text_chunks)
+                    print(f"Time taken for creating a vector store: {time.time() - start_time} seconds")
 
                 # Create a conversation chain
                 start_time = time.time()
+                vector_store = get_vector_store()
                 st.session_state.conversation = create_conversation_chain(
                     vector_store)
                 print(f"Time taken for creating a conversation chain: {time.time() - start_time} seconds")
