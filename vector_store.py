@@ -2,10 +2,13 @@ from transformers import pipeline
 from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 from langchain.vectorstores import Chroma
 from multiprocessing import Pool, Value
+import chromadb
+from chromadb.config import Settings
 
 def get_vector_store():
     embedding_function = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
-    return Chroma(persist_directory="vector_store", embedding_function=embedding_function)
+    client = chromadb.HttpClient("https://chroma-production-6dfa.up.railway.app/", port=443, ssl=True)
+    return Chroma(client=client, embedding_function=embedding_function)
 
 def get_indices_of_start_batch(num_images):
     """Returns a list of indices to start the batch. Each batch should have 10 or less elements"""
@@ -22,15 +25,15 @@ def summarize_text(text):
 
 def embbed_vectors(text_chunks):
     """Creates a vector store from a list of strings and returns a vector store"""
-    embedding_function = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
-
-    # Loop through the text chunks and create a vector store
-    db = Chroma(persist_directory="vector_store", embedding_function=embedding_function)
+    db = get_vector_store()
+    summaries = []
     for idx, text_chunk in enumerate(text_chunks):
         # Sumarize the text chunk
         summary = summarize_text(text_chunk)
         # Add an emdedding to the vector store and summary as the metadata
-        db.add_texts(texts=[text_chunk], metadata=[summary])
+        summaries.append(summary)
+        
+    db.add_texts(texts=text_chunks, metadata=summaries)
 
     print("Processing finished")
 

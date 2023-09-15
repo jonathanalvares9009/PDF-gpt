@@ -129,8 +129,8 @@ def main():
 
                 # Create vector store if it doesn't exist
                 start_time = time.time()
-                if not os.path.exists("vector_store"):
-                    create_vector_store(text_chunks)
+                # if not os.path.exists("vector_store"):
+                # create_vector_store(text_chunks)
                 # Load vector store
                 vector_store = get_vector_store()
                 print(f"Time taken for creating a vector store: {time.time() - start_time} seconds")
