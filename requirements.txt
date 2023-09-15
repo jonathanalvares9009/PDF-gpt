@@ -5,3 +5,4 @@ pytesseract
 transformers
 chromadb
 pysqlite3-binary
+sentence-transformers
